@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Haven — Поиск пропавших</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #c79f6a;
+            --dark-bg: #1a1a1a;
+            --light-text: #e0d7c3;
+            --accent: #d4af37;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+    font-family: 'Georgia', serif;
+    background: url('https://99px.ru/sstorage/86/2021/03/image_860703210104106304763.gif') no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed;
+    animation: moveBg 60s linear infinite;
+    color: var(--light-text);
+    line-height: 1.6;
+}
+
+body.light-mode {
+    background: url('') no-repeat center center fixed;
+    background-size: cover;
+}
+
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Кнопка пользователя */
+        .user-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: var(--dark-bg);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(199, 159, 106, 0.3);
+            transition: var(--transition);
+        }
+
+        .user-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-content {
+            background: var(--dark-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: modalAppear 0.4s ease-out;
+        }
+
+
+        .modal input {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #333;
+            color: var(--light-text);
+        }
+        @keyframes modalAppear {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--gold);
+            transform: rotate(90deg);
+        }
+
+        /* Основные кнопки */
+        .main-button {
+            background: var(--gold);
+            color: var(--dark-bg);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(199, 159, 106, 0.4);
+        }
+
+        /* Галерея */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .gallery-item {
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .gallery-item p {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0,0,0,0.7);
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Планы */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .plan-card {
+            padding: 2rem;
+            border-radius: 15px;
+            background: #2a2a2a;
+            transition: var(--transition);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .plan-card.vip {
+            background: linear-gradient(135deg, var(--gold), #FFD700);
+            color: var(--dark-bg);
+        }
+
+        /* Контакты */
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #2a2a2a;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Страница поиска */
+        #searchPage {
+            display: none;
+        }
+
+        .search-form {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #2a2a2a;
+            border-radius: 15px;
+        }
+
+        .plan-selection {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #333;
+            border-radius: 15px;
+        }
+
+        .plan-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .plan-button {
+            padding: 1rem;
+            border: 2px solid var(--gold);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--light-text);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .plan-button.active {
+            background: var(--gold);
+            color: var(--dark-bg);
+        }
+
+        .search-form input,
+        .search-form textarea {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #333;
+            color: var(--light-text);
+        }
+
+        .search-form textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+        @keyframes moveBg {
+    50% { background-position: 20% 20%; }
+    50% { background-position: 50% 50%; }
+    100% { background-position: 0% 0%; }
+}
+
+        
+    </style>
+</head>
+<body>
+    
+    
+
+    
+    <button class="user-button" onclick="openModal()">
+        <i class="fas fa-user"></i>
+    </button>
+
+    
+   
+             <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <h2 class="auth-heading">Қош келдіңіз!</h2>
+
+         <div class="modal-tabs">
+  <button class="main-button active" onclick="switchTab('login')">кіру</button>
+  <button class="main-button" onclick="switchTab('register')">Тіркелу</button>
+</div>
+
+
+            <div class="tab-content active" id="loginTab">
+                <form id="loginForm">
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Пароль" required>
+                    <button type="submit" class="main-button">Кіру</button>
+                </form>
+            </div>
+
+            <div class="tab-content" id="registerTab">
+                <form id="registerForm">
+                    <input type="text" placeholder="Имя" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Пароль" required>
+                    <button type="submit" class="main-button">Тіркелу</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Главная страница -->
+        <div id="homePage">
+            <header>
+                 <div style="text-align: center; margin-top: 2rem;">
+                <h1 class="glow-title">Safe Haven</h1>
+                <p class="glow-subtitle">Біз жақындарымызды қайтаруға көмектесеміз</p>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="main-button glow-button" onclick="showPage('searchPage')">
+                              Начать поиск
+                     <i class="fas fa-search"></i>
+                </button>
+
+                </div>
+            </div>
+            </header>
+
+            <section class="gallery">
+                 <div style="text-align: center; margin-top: 2rem;">
+                <h2 class="styled-heading">Біздің сәтті іздеулеріміз</h2>
+
+
+            </div>
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="r1.jpg" alt="Найденный человек">
+                        <p>Арина 12 сағаттан кейін табылды</p>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://frankfurt.apollo.olxcdn.com/v1/files/rjrtv4kvf6yf2-KZ/image" alt="Найденная собака">
+                        <p>Ақтөс үйіне қайтып оралды</p>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="r3.jpeg" alt="Воссоединение семьи">
+                        <p>Отбасы қайта қосылды</p>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- Планы -->
+            <section class="plans">
+                <h2 class="plans-heading">Іздеу опциялары</h2>
+
+                <div class="plans-grid">
+                    <div class="plan-card">
+                        <h3>Standard</h3>
+                        <ul>
+                            <li>📢 Хабарландырулар жіберу</li>
+                            <li>📝 Өтінішті жариялау</li>
+                            <li>💬 Қолдау арқылы сөйлесу</li>
+                        </ul>
+                          <div style="text-align: ; margin-top: 2rem;">
+                        <button class="main-button" onclick="showPage('searchPage')">
+                            Таңдау
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    </div>
+                    <div class="plan-card vip">
+                        <h3>VIP</h3>
+                        <ul>
+                            <li>📹 Камералар арқылы іздеу</li>
+                            <li>🚁 Дронды іздеу</li>
+                            <li>📱 Телефон нөмірі бойынша іздеу</li>
+                            <li>📍 Геолокация бойынша іздеу</li>
+                            <li>💎 Басымдық қолдау</li>
+                        </ul>
+                          <div style="text-align: ; margin-top: 2rem;">
+                        <button class="main-button" onclick="showPage('searchPage')">
+                            Таңдау
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            </section>
+            <button class="support-button" onclick="toggleSupportBox()">
+  <img src="https://telenettw.ru/wp-content/uploads/2022/10/tekhpodderzhka-telenet.png" alt="?" />
+</button>
+
+<div class="support-box" id="supportBox">
+  <h3>Қандай көмек керек?</h3>
+  <textarea placeholder="Мысалы: адам іздеу, VIP қосу..." rows="3"></textarea>
+  <button onclick="sendSupport()">Жіберу</button>
+</div>
+
+            <div class="services-panel" id="servicesPanel">
+  <h3>💼 Біздің қызметтер</h3>
+  <ul>
+    <li>📢 Хабарландыру тарату</li>
+    <li>📍 Геолокация арқылы іздеу</li>
+    <li>📞 Контакт арқылы қолдау</li>
+    <li>💎 VIP іздеу жүйесі</li>
+  </ul>
+  <button onclick="closeServices()">Жабу</button>
+</div>
+<div class="support-popup" id="supportPopup">
+  <div class="support-content">
+    <span class="close-support" onclick="closeSupportPopup()">×</span>
+    <h4>🤝 Сайтты қолдаңыз</h4>
+    <p>Егер бұл жоба пайдалы болса, қолдауыңызды білдіре аласыз. Рақмет! 💛</p>
+    <button onclick="alert('Рақмет! Қолдауыңыз қабылданды.')">Қолдау білдіру</button>
+  </div>
+</div>
+
+
+<button class="open-services-btn" onclick="openServices()">➤</button>
+
+
+            
+            <section class="contacts">
+                <h2 class="contact-heading">Бізбен хабарласыңыз</h2>
+
+                <div class="contacts-grid">
+                    <div class="contact-card">
+                        <i class="fab fa-instagram"></i>
+                        <div>
+                            <h3>Instagram</h3>
+                            <p>@safe_haven</p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fab fa-tiktok"></i>
+                        <div>
+                            <h3>TikTok</h3>
+                            <p>@safe_haven</p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h3>Телефон</h3>
+                            <p>+7 777 555 44 33</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+        <div id="searchPage">
+            <div class="search-form">
+                <button class="main-button" onclick="showPage('homePage')">
+                    <i class="fas fa-arrow-left"></i> Шығу
+                </button>
+                <h2>Қазір өтініш беріңіз</h2>
+                <form id="searchForm">
+                    <input type="file" accept="image/*" required>
+                    <input type="text" placeholder="Имя пропавшего" required>
+                    <input type="tel" placeholder="Контактный телефон" required>
+                    
+                    <div class="plan-selection">
+                        <h3>Іздеу жоспарын таңдаңыз:</h3>
+                        <div class="plan-options">
+                            <button type="button" class="plan-button" data-plan="standard">
+                                Standard
+                                <div>Тегін</div>
+                            </button>
+                            <button type="button" class="plan-button" data-plan="vip">
+                                VIP
+                                <div>10.000₸/айына</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <textarea placeholder="Описание" rows="4" required></textarea>
+                    <button type="submit" class="main-button">Өтінім жіберу</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="site-footer">
+  <div class="footer-content">
+    <p>© 2025 Safe Haven. Барлық құқықтар қорғалған.</p>
+    <p>Сайтты әзірлеген: <strong>Өсербек Нұрлыбек Ағабекұлы</strong></p>
+  </div>
+</footer>
+
+
+    <script>
+
+        let selectedPlan = null;
+
+        // Управление страницами
+        function showPage(pageId) {
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+
+        // Модальное окно
+        function openModal() {
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        // Выбор плана
+        document.querySelectorAll('.plan-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.plan-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+                selectedPlan = button.dataset.plan;
+            });
+        });
+
+        // Обработка форм
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if(!selectedPlan) {
+                alert('Пожалуйста, выберите план поиска!');
+                return;
+            }
+            alert('Заявка отправлена!');
+            showPage('homePage');
+        });
+
+        // Закрытие модального окна
+        window.onclick = function(e) {
+            if(e.target == document.getElementById('authModal')) {
+                closeModal();
+            }
+        }
+         function toggleTheme() {
+    document.body.classList.toggle("light-mode");
+
+    const toggleBtn = document.querySelector(".theme-toggle");
+    if (document.body.classList.contains("light-mode")) {
+      toggleBtn.innerText = "🌙";
+    } else {
+      toggleBtn.innerText = "☀️";
+    }
+  }
+  function openServices() {
+    document.getElementById('servicesPanel').classList.add('open');
+  }
+
+  function closeServices() {
+    document.getElementById('servicesPanel').classList.remove('open');
+  }
+  function toggleSupportBox() {
+    const box = document.getElementById('supportBox');
+    box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function sendSupport() {
+    const message = document.querySelector('#supportBox textarea').value;
+    if (message.trim() !== '') {
+      alert("Сұраныс қабылданды: " + message);
+      document.getElementById('supportBox').style.display = 'none';
+    } else {
+      alert("Сұрақ жазылған жоқ 😅");
+    }
+  }
+  setTimeout(() => {
+    document.getElementById('supportPopup').style.display = 'block';
+  }, 3000);
+
+  // Жабу функциясы
+  function closeSupportPopup() {
+    document.getElementById('supportPopup').style.display = 'none';
+  }
+    </script>
+</body>
+</html>  
+<style>
+    .glow-title {
+    color: #FFD700;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+    font-size: 3rem;
+    text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+}
+
+.glow-subtitle {
+    color: #FFD700;
+    text-align: center;
+    animation: pulse 2s ease-in-out infinite;
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+    text-shadow: 0 0 5px #ffd700;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.glow-button {
+    position: relative;
+    z-index: 1;
+    animation: glowPulse 2s ease-in-out infinite;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6),
+                0 0 30px rgba(255, 215, 0, 0.4);
+    background: #FFD700;
+    color: black;
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.4),
+                    0 0 10px rgba(255, 215, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+                    0 0 40px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.4),
+                    0 0 10px rgba(255, 215, 0, 0.2);
+    }
+}
+.plan-card {
+    padding: 2rem;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #2a2a2a, #3a3a3a, #2a2a2a);
+    background-size: 400% 400%;
+    animation: gradientFlow 10s ease infinite;
+    transition: var(--transition);
+    color: var(--light-text);
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+.plan-card.vip {
+    background: linear-gradient(135deg, #c79f6a, #FFD700, #c79f6a);
+    background-size: 400% 400%;
+    animation: gradientFlow 8s ease infinite;
+    color: var(--dark-bg);
+}
+.contact-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.contact-card i {
+    font-size: 2rem;
+    color: #FFD700;
+}
+
+.contact-card h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.contact-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #e0d7c3;
+}
+.search-form {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 2rem 3rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeInUp 0.6s ease-out;
+    color: white;
+}
+#searchPage {
+    display: none;
+    padding: 3rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    animation: fadeIn 0.5s ease;
+}
+
+.search-form {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.1);
+    color: white;
+}
+
+.search-form h2 {
+    text-align: center;
+    color: #FFD700;
+    margin-bottom: 1rem;
+}
+
+.search-form input,
+.search-form textarea {
+    width: 100%;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid #444;
+    border-radius: 10px;
+    background: #1a1a1a;
+    color: #e0d7c3;
+    transition: 0.3s;
+}
+
+.search-form input:focus,
+.search-form textarea:focus {
+    border-color: #FFD700;
+    outline: none;
+    box-shadow: 0 0 10px #FFD70033;
+}
+
+.plan-button {
+    background: #2a2a2a;
+    color: #fff;
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: 0.3s;
+}
+
+.plan-button:hover {
+    background: #FFD700;
+    color: #000;
+}
+
+.plan-button.active {
+    background: #FFD700;
+    color: #000;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.styled-heading {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 200;
+    color: #FFD700;
+    letter-spacing: 1px;
+    font-family: 'Georgia', serif;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.auth-heading {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #FFD700;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    animation: fadeInPop 0.8s ease-out;
+}
+
+@keyframes fadeInPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+.modal-tabs .main-button {
+    background: transparent;
+    border: 2px solid #FFD700;
+    color: #FFD700;
+    padding: 10px 20px;
+    border-radius: 30px;
+    margin: 0 5px;
+    font-weight: bold;
+    transition: 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+}
+
+.modal-tabs .main-button:hover {
+    background: #FFD700;
+    color: #1a1a1a;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    transform: scale(1.05);
+}
+
+.modal-tabs .main-button.active {
+    background: #FFD700;
+    color: #1a1a1a;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+    transform: scale(1.08);
+}
+.plans-heading {
+    text-align: left;
+    color: #FFD700;
+    font-size: 2.2rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 1px;
+    font-family: 'Georgia', serif;
+}
+.contact-heading {
+    text-align: left; 
+    color: #FFD700; 
+    font-size: 2.2rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    font-weight: bold;
+    margin: 2rem 0 1.5rem 2rem; 
+    letter-spacing: 1px;
+    font-family: 'Georgia', serif;
+}
+
+@media (max-width: 600px) {
+
+  body {
+    font-size: 14px;
+    padding: 0;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  /* ✨ Тақырыптар */
+  h1, h2, h3 {
+    font-size: 1.5rem;
+    text-align: left;
+  }
+
+  .glow-title {
+    font-size: 2rem;
+  }
+
+  .glow-subtitle {
+    font-size: 1rem;
+  }
+
+  /* 📦 Модал */
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .modal input {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  .modal-tabs .main-button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  /* 📝 Форма */
+  .search-form {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .search-form h2 {
+    font-size: 1.4rem;
+  }
+
+  .search-form input,
+  .search-form textarea {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+    margin: 0.4rem 0;
+    border-radius: 8px;
+  }
+
+  .main-button {
+    font-size: 0.95rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: 25px;
+  }
+
+  .plan-selection {
+    padding: 1rem;
+  }
+
+  .plan-options {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+
+  .plan-button {
+    font-size: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  /* 📷 Галерея */
+  .gallery-grid,
+  .plans-grid,
+  .contacts-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  .gallery-item img {
+    height: 180px;
+  }
+
+  /* 🧾 План карточкалары */
+  .plan-card {
+    padding: 1rem;
+  }
+
+  /* 📞 Контакты */
+  .contact-card {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .contact-card i {
+    font-size: 1.5rem;
+  }
+
+  .contact-card h3 {
+    font-size: 1rem;
+  }
+
+  .contact-card p {
+    font-size: 0.85rem;
+  }
+}
+/* 🌗 Тақырып ауыстыру батырмасы */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 1.5rem;
+    background: #FFD700;
+    color: black;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    transition: 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+/* 🌞 Light Mode */
+body.light-mode {
+    background: #f9f9f9;
+    color: #111;
+}
+
+body.light-mode .main-button {
+    background: #333;
+    color: #fff;
+}
+
+body.light-mode .plan-card,
+body.light-mode .search-form,
+body.light-mode .contact-card,
+body.light-mode .modal-content {
+    background: #ffffff;
+    color: #000;
+    border: 1px solid #ddd;
+}
+
+body.light-mode .gallery-item p {
+    background: rgba(255, 255, 255, 0.8);
+    color: #111;
+}
+.site-footer {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 1.5rem;
+    text-align: center;
+    color: #aaa;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 3rem;
+}
+
+.site-footer strong {
+    color: #FFD700;
+    font-weight: 600;
+}
+
+.site-footer p {
+    margin: 0.3rem 0;
+}
+
+.services-panel {
+  position: fixed;
+  top: 100px;
+  left: -320px; /* бастапқыда жасырын */
+  width: 300px;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 20px;
+  border-radius: 0 15px 15px 0;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+  transition: left 0.4s ease;
+  z-index: 9999;
+}
+
+.services-panel.open {
+  left: 0; /* ашылғанда көрінеді */
+}
+
+.services-panel h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #FFD700;
+}
+
+.services-panel ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 15px;
+}
+
+.services-panel ul li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.services-panel button {
+  background: #FFD700;
+  color: #1a1a1a;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+.open-services-btn {
+  position: fixed;
+  top: 110px;
+  left: 0;
+  z-index: 9998;
+  background: #FFD700;
+  border: none;
+  padding: 10px;
+  border-radius: 0 10px 10px 0;
+  font-size: 20px;
+  cursor: pointer;
+}
+.support-button {
+  position: fixed;
+  top: 20px;
+  left: 20px; /* сол жақта */
+  background: #ffd700;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  z-index: 10000;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.support-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.support-box {
+  position: fixed;
+  top: 80px;
+  left: 20px; /* сол жақта */
+  width: 280px;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+  border-radius: 15px;
+  color: white;
+  display: none;
+  z-index: 10001;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.support-box h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.support-box textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  resize: none;
+  margin-bottom: 10px;
+}
+
+.support-box button {
+  width: 100%;
+  background: #ffd700;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.support-popup {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: #1a1a1a;
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  z-index: 9999;
+  animation: slideUp 0.6s ease;
+  display: none;
+}
+
+.support-content h4 {
+  margin-top: 0;
+  color: #FFD700;
+  font-size: 18px;
+}
+
+.support-content p {
+  font-size: 15px;
+  margin: 10px 0;
+  color: #ccc;
+}
+
+.support-content button {
+  width: 100%;
+  background: #FFD700;
+  color: #1a1a1a;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.close-support {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #aaa;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+</style>
+

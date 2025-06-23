@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Haven — Поиск пропавших</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --gold: #c79f6a;
+            --dark-bg: #1a1a1a;
+            --light-text: #e0d7c3;
+            --accent: #d4af37;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: var(--dark-bg);
+            color: var(--light-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Кнопка пользователя */
+        .user-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: var(--dark-bg);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(199, 159, 106, 0.3);
+            transition: var(--transition);
+        }
+
+        .user-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Центрирование заголовка */
+        .header-content {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+        }
+
+        .header-content p {
+            font-size: 1.2rem;
+        }
+
+        /* Основные кнопки */
+        .main-button {
+            background: var(--gold);
+            color: var(--dark-bg);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(199, 159, 106, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Кнопка пользователя -->
+    <button class="user-button" onclick="openModal()">
+        <i class="fas fa-user"></i>
+    </button>
+
+    <div class="container">
+        <!-- Главная страница -->
+        <div id="homePage">
+            <header class="header-content">
+                <h1>Safe Haven</h1>
+                <p>Помогаем вернуть близких</p>
+            </header>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="main-button" onclick="showPage('searchPage')">
+                    Начать поиск
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('[id$="Page"]').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById(pageId).style.display = 'block';
+        }
+    </script>
+</body>
+</html>

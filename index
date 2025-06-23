@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gothic Search</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Gothic Search</h1>
+      <p>Помогаем находить пропавших с помощью технологий</p>
+    </div>
+  </header>
+
+  <section id="about">
+    <div class="container">
+      <h2>О проекте</h2>
+      <p>Мы используем современные технологии, такие как дроны и городские камеры, чтобы находить пропавших людей и животных. Присоединяйтесь к нам!</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="container">
+      <h2>Возможности</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <h3>Уведомления</h3>
+          <p>Мгновенные оповещения о пропаже.</p>
+        </div>
+        <div class="feature">
+          <h3>VIP-поиск</h3>
+          <p>Использование дронов и камер.</p>
+        </div>
+        <div class="feature">
+          <h3>Вознаграждения</h3>
+          <p>Нашедшие получают денежные призы.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="container">
+      <h2>Свяжитесь с нами</h2>
+      <form id="contact-form">
+        <input type="text" placeholder="Ваше имя" required>
+        <input type="email" placeholder="Ваш email" required>
+        <textarea placeholder="Ваше сообщение" required></textarea>
+        <button type="submit">Отправить</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Gothic Search. Все права защищены.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

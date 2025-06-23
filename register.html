@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe Haven — Поиск</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="C:\Users\usero\OneDrive\Рабочий стол\test\logo.png">
+</head>
+<body>
+  <div class="container">
+    <!-- Шапка -->
+    <header>
+      <h1>Safe Haven</h1>
+      <p>Помогаем вернуть близких</p>
+    </header>
+
+    <!-- Основной контент -->
+    <main>
+      <!-- Выбор плана -->
+      <section class="plans">
+        <h2>Выберите план</h2>
+        <div class="plans-grid">
+          <!-- Стандартный план -->
+          <div class="plan-card">
+            <h3>Standard</h3>
+            <p class="price">Бесплатно</p>
+            <ul>
+              <li>📢 Рассылка уведомлений</li>
+              <li>📝 Публикация заявки</li>
+              <li>💬 Чат с поддержкой</li>
+            </ul>
+            <button onclick="selectPlan('Standard')">Выбрать</button>
+          </div>
+
+          <!-- VIP план -->
+          <div class="plan-card vip">
+            <h3>VIP</h3>
+            <p class="price">39990тг/месяц</p>
+            <ul>
+              <li>📹 Поиск через камеры</li>
+              <li>🚁 Поиск с дронов</li>
+              <li>📱 Поиск по номеру телефона</li>
+              <li>📍 Поиск по геолокации</li>
+              <li>💎 Приоритетная поддержка</li>
+            </ul>
+            <button onclick="selectPlan('VIP')">Выбрать</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Форма регистрации -->
+      <section class="search">
+        <h2>Подать заявку</h2>
+        <form id="registrationForm">
+          <label for="photo">Фотография:</label>
+          <input type="file" id="photo" accept="image/*" required>
+
+          <label for="name">Имя:</label>
+          <input type="text" id="name" placeholder="Иван Иванов" required>
+
+          <label for="age">Возраст:</label>
+          <input type="number" id="age" placeholder="Возраст" required>
+
+          <label for="phone">Телефон:</label>
+          <input type="tel" id="phone" placeholder="+7 (900) 123-45-67" required>
+
+          <label for="date">Дата пропажи:</label>
+          <input type="date" id="date" required>
+
+          <label for="info">Описание:</label>
+          <textarea id="info" rows="5" placeholder="Особые приметы, одежда..." required></textarea>
+
+          <label for="plan">Выбранный план:</label>
+          <input type="text" id="plan" readonly required>
+
+          <button type="submit">Отправить</button>
+        </form>
+      </section>
+    </main>
+
+    <!-- Подвал -->
+    <footer>
+      <p>&copy; 2025 Safe Haven. Все права защищены.</p>
+    </footer>
+  </div>
+
+  <!-- Парящие частицы -->
+  <div class="particles"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
